@@ -2,35 +2,45 @@ from collections import deque
 
 class KlinikManager:
     def __init__(self):
-        # --- PENERAPAN MODUL 7: QUEUE (FIFO) ---
-        # Menggunakan deque biar proses antrian cepat
-        self.antrian_pasien = deque()
-        
-        # --- PENERAPAN MODUL 7: STACK (LIFO) ---
-        # Menggunakan list biasa sebagai tumpukan riwayat
+        self.antrian_darurat = deque()  
+        self.antrian_umum = deque()     
         self.riwayat_panggilan = []
 
+    @property
+    def antrian_pasien(self):
+        return list(self.antrian_darurat) + list(self.antrian_umum)
+
     def tambah_antrian(self, pasien):
-        # Enqueue: Masuk dari belakang
-        self.antrian_pasien.append(pasien)
-        print(f"[Sistem] Pasien {pasien.nama} berhasil masuk antrian.")
+        if pasien.kategori == "Darurat":
+            self.antrian_darurat.append(pasien)
+            print(f"[Sistem] Pasien DARURAT {pasien.nama} masuk antrian prioritas.")
+        else:
+            self.antrian_umum.append(pasien)
+            print(f"[Sistem] Pasien {pasien.nama} masuk antrian umum.")
 
     def panggil_pasien(self):
-        # Cek apakah antrian kosong? (Modul 2: Pengkondisian)
-        if len(self.antrian_pasien) > 0:
-            # Dequeue: Keluar dari depan (FIFO)
-            pasien_keluar = self.antrian_pasien.popleft()
-            
-            # Push ke Stack Riwayat (LIFO)
+        pasien_keluar = None
+        
+        if len(self.antrian_darurat) > 0:
+            pasien_keluar = self.antrian_darurat.popleft()
+            print(f"[Sistem] Memanggil pasien DARURAT: {pasien_keluar.nama}")
+        
+        elif len(self.antrian_umum) > 0:
+            pasien_keluar = self.antrian_umum.popleft()
+            print(f"[Sistem] Memanggil pasien UMUM: {pasien_keluar.nama}")
+        
+        if pasien_keluar:
             self.riwayat_panggilan.append(pasien_keluar)
-            
             return pasien_keluar
         else:
+            print("[Sistem] Antrian kosong!")
             return None
 
     def lihat_riwayat_terakhir(self):
-        # Peek Stack: Intip data paling atas tumpukan (LIFO)
         if len(self.riwayat_panggilan) > 0:
             return self.riwayat_panggilan[-1]
         else:
             return None
+    
+    def lihat_semua_riwayat(self):
+        return self.riwayat_panggilan
