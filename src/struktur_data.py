@@ -20,7 +20,6 @@ class KlinikManager:
 
     def panggil_pasien(self):
         pasien_keluar = None
-        
         if len(self.antrian_darurat) > 0:
             pasien_keluar = self.antrian_darurat.popleft()
             print(f"[Sistem] Memanggil pasien DARURAT: {pasien_keluar.nama}")
